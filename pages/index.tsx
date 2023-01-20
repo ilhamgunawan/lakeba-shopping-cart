@@ -2,9 +2,6 @@ import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import Snackbar from '@mui/material/Snackbar'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
 import Pagination from '@mui/material/Pagination'
 import ProductCard, { Placeholder } from '@/components/ProductCard'
 import CartModal from '@/components/CartModal'
@@ -13,7 +10,6 @@ import { useQuery } from "react-query"
 import { useRouter } from 'next/router'
 import { getProducts } from "@/lib/product"
 import { getPagination } from '@/lib/pagination'
-import { useCartStore } from '@/stores/cart'
 
 const Header = dynamic(() => import('@/components/Header'), { ssr: false })
 
@@ -37,7 +33,6 @@ type Props = {
 export default function IndexPage({ page }: Props) {
   const queryKey = `products-${page}`
   const { isLoading, data } = useQuery(queryKey, () => getProducts({ page }))
-  const { showAddItemSuccessMessage, hideSuccessMessage } = useCartStore()
   const router = useRouter()
 
   if (!data && isLoading) {
@@ -89,22 +84,6 @@ export default function IndexPage({ page }: Props) {
         </Grid>
       </Container>
       <CartModal />
-      <Snackbar
-        open={showAddItemSuccessMessage}
-        autoHideDuration={3000}
-        onClose={hideSuccessMessage}
-        message="Item added to cart"
-        action={
-          <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={hideSuccessMessage}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        }
-      />
     </>
   )
 }

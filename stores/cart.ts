@@ -13,12 +13,10 @@ interface CartState {
   cart: Cart[]
   totalQuantity: number
   totalPrice: number
-  showAddItemSuccessMessage: boolean
   showCartModal: boolean
   addItem: (product: Product) => void
   removeItem: (id: string) => void
   decreaseItemQuantity: (product: Product) => void
-  hideSuccessMessage: () => void
   toggleCartModal: () => void
 }
 
@@ -27,7 +25,6 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       cart: [],
       totalQuantity: 0,
-      showAddItemSuccessMessage: false,
       showCartModal: false,
       totalPrice: 0,
       addItem: (product) => set((state) => {
@@ -38,7 +35,6 @@ export const useCartStore = create<CartState>()(
             cart: newCart,
             totalQuantity: state.totalQuantity += 1,
             totalPrice: calculateTotalPrice(newCart),
-            showAddItemSuccessMessage: true,
           }
         }
         return {
@@ -54,7 +50,6 @@ export const useCartStore = create<CartState>()(
           ],
           totalQuantity: state.totalQuantity += 1,
           totalPrice: state.totalPrice + product.price,
-          showAddItemSuccessMessage: true,
         }
       }),
       removeItem: (id) => set((state) => {
@@ -82,10 +77,6 @@ export const useCartStore = create<CartState>()(
           totalPrice: calculateTotalPrice(newCart),
         }
       }),
-      hideSuccessMessage: () => set((state) => ({
-        ...state,
-        showAddItemSuccessMessage: false,
-      })),
       toggleCartModal: () => set((state) => ({
         ...state,
         showCartModal: !state.showCartModal
