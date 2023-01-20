@@ -1,3 +1,6 @@
+## Live Demo
+https://lakeba-shopping-cart.vercel.app/
+
 ## Specifications
 - Framework: Next.js
 - UI library: Material UI
