@@ -1,10 +1,14 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import TopBar from '@/components/TopBar'
+import Snackbar from '@mui/material/Snackbar'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 import ProductCard, { Placeholder } from '@/components/ProductCard'
 import { GetServerSideProps } from "next"
 import { useQuery } from "react-query"
 import { getProducts } from "@/lib/product"
+import { useCartStore } from '@/stores/cart'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const page = context.query.page ? parseInt(context.query.page as string) : 1
@@ -21,6 +25,7 @@ type Props = {
 export default function IndexPage({ page }: Props) {
   const queryKey = `products-${page}`
   const { isLoading, data } = useQuery(queryKey, () => getProducts({ page }))
+  const { showAddItemSuccessMessage, hideSuccessMessage } = useCartStore()
 
   if (!data && isLoading) {
     return (
@@ -47,6 +52,22 @@ export default function IndexPage({ page }: Props) {
           )}
         </Grid>
       </Container>
+      <Snackbar
+        open={showAddItemSuccessMessage}
+        autoHideDuration={3000}
+        onClose={hideSuccessMessage}
+        message="Item added to cart"
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={hideSuccessMessage}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
     </>
   )
 }

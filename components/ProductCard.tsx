@@ -13,12 +13,15 @@ import {
 } from '@mui/material'
 import { Product } from '@/lib/product'
 import { formatNumberToUSD } from '@/utils/common'
+import { useCartStore } from '@/stores/cart'
 
 type Props = {
   product: Product
 }
 
 export default function ProductCard({ product }: Props) {
+  const { addItem } = useCartStore()
+
   return (
     <Card>
       <CardActionArea href={`/products/${product.id}`}>
@@ -51,7 +54,12 @@ export default function ProductCard({ product }: Props) {
       </CardActionArea>
       <CardActions>
         <Stack>
-          <Button size="small" color="primary" startIcon={<ShoppingCartIcon />}>
+          <Button 
+            onClick={() => addItem(product)} 
+            size="small" 
+            color="primary" 
+            startIcon={<ShoppingCartIcon />}
+          >
             Add to cart
           </Button>
         </Stack>
