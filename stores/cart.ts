@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { Product } from '@/lib/product'
 
 export interface Cart {
@@ -21,73 +22,81 @@ interface CartState {
   toggleCartModal: () => void
 }
 
-export const useCartStore = create<CartState>()((set) => ({
-  cart: [],
-  totalQuantity: 0,
-  showAddItemSuccessMessage: false,
-  showCartModal: false,
-  totalPrice: 0,
-  addItem: (product) => set((state) => {
-    if (isProductExist(product, state)) {
-      const newCart = addExistingItem(product, state)
-      return {
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      cart: [],
+      totalQuantity: 0,
+      showAddItemSuccessMessage: false,
+      showCartModal: false,
+      totalPrice: 0,
+      addItem: (product) => set((state) => {
+        if (isProductExist(product, state)) {
+          const newCart = addExistingItem(product, state)
+          return {
+            ...state,
+            cart: newCart,
+            totalQuantity: state.totalQuantity += 1,
+            totalPrice: calculateTotalPrice(newCart),
+            showAddItemSuccessMessage: true,
+          }
+        }
+        return {
+          ...state,
+          cart: [
+            {
+              id: crypto.randomUUID(),
+              quantity: 1,
+              product,
+              price: product.price,
+            },
+            ...state.cart,
+          ],
+          totalQuantity: state.totalQuantity += 1,
+          totalPrice: state.totalPrice + product.price,
+          showAddItemSuccessMessage: true,
+        }
+      }),
+      removeItem: (id) => set((state) => {
+        const newCart = state.cart.filter((cartItem) => cartItem.id !== id)
+        return {
+          ...state,
+          cart: newCart,
+          totalQuantity: calculateTotalQuantity(newCart),
+          totalPrice: calculateTotalPrice(newCart),
+        }
+      }),
+      decreaseItemQuantity: (product) => set((state) => {
+        const newCart = state.cart.map((cartItem) => {
+          if (cartItem.product.id !== product.id) return cartItem
+          return {
+            ...cartItem,
+            quantity: cartItem.quantity -= 1,
+            price: cartItem.price - product.price,
+          }
+        })
+        return {
+          ...state,
+          cart: newCart,
+          totalQuantity: calculateTotalQuantity(newCart),
+          totalPrice: calculateTotalPrice(newCart),
+        }
+      }),
+      hideSuccessMessage: () => set((state) => ({
         ...state,
-        cart: newCart,
-        totalQuantity: state.totalQuantity += 1,
-        totalPrice: calculateTotalPrice(newCart),
-        showAddItemSuccessMessage: true,
-      }
+        showAddItemSuccessMessage: false,
+      })),
+      toggleCartModal: () => set((state) => ({
+        ...state,
+        showCartModal: !state.showCartModal
+      })),
+    }),
+    {
+      name: 'cart-storage',
+      storage: createJSONStorage(() => localStorage),
     }
-    return {
-      ...state,
-      cart: [
-        {
-          id: crypto.randomUUID(),
-          quantity: 1,
-          product,
-          price: product.price,
-        },
-        ...state.cart,
-      ],
-      totalQuantity: state.totalQuantity += 1,
-      totalPrice: state.totalPrice + product.price,
-      showAddItemSuccessMessage: true,
-    }
-  }),
-  removeItem: (id) => set((state) => {
-    const newCart = state.cart.filter((cartItem) => cartItem.id !== id)
-    return {
-      ...state,
-      cart: newCart,
-      totalQuantity: calculateTotalQuantity(newCart),
-      totalPrice: calculateTotalPrice(newCart),
-    }
-  }),
-  decreaseItemQuantity: (product) => set((state) => {
-    const newCart = state.cart.map((cartItem) => {
-      if (cartItem.product.id !== product.id) return cartItem
-      return {
-        ...cartItem,
-        quantity: cartItem.quantity -= 1,
-        price: cartItem.price - product.price,
-      }
-    })
-    return {
-      ...state,
-      cart: newCart,
-      totalQuantity: calculateTotalQuantity(newCart),
-      totalPrice: calculateTotalPrice(newCart),
-    }
-  }),
-  hideSuccessMessage: () => set((state) => ({
-    ...state,
-    showAddItemSuccessMessage: false,
-  })),
-  toggleCartModal: () => set((state) => ({
-    ...state,
-    showCartModal: !state.showCartModal
-  })),
-}))
+  )
+)
 
 const addExistingItem = (product: Product, state: CartState) => 
   state.cart.map(cartItem => {

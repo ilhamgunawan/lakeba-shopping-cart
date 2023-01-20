@@ -16,7 +16,7 @@ export default function TopBar({ title }: Props) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="default">
+      <AppBar position="fixed" color="default">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {title}

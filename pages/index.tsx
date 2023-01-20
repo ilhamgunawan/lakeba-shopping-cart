@@ -1,6 +1,7 @@
+import Head from 'next/head'
+import dynamic from 'next/dynamic'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import TopBar from '@/components/TopBar'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
@@ -11,12 +12,19 @@ import { useQuery } from "react-query"
 import { getProducts } from "@/lib/product"
 import { useCartStore } from '@/stores/cart'
 
+const Header = dynamic(() => import('@/components/Header'), { ssr: false })
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const page = context.query.page ? parseInt(context.query.page as string) : 1
 
   return {
     props: { page }
   }
+}
+
+const containerStyle = {
+  paddingTop: "80px",
+  paddingBottom: "100px",
 }
 
 type Props = {
@@ -31,8 +39,8 @@ export default function IndexPage({ page }: Props) {
   if (!data && isLoading) {
     return (
       <>
-        <TopBar title="Product List" />
-        <Container maxWidth="sm">
+        <Header title="Product List" />
+        <Container maxWidth="sm" sx={containerStyle}>
           <Grid container spacing={2}>
             <ProductPlaceholders />
           </Grid>
@@ -43,8 +51,9 @@ export default function IndexPage({ page }: Props) {
 
   return (
     <>
-      <TopBar title="Product List" />
-      <Container maxWidth="sm">
+      <Head><title>Product List</title></Head>
+      <Header title="Product List" />
+      <Container maxWidth="sm" sx={containerStyle}>
         <Grid container spacing={2}>
           {data?.products.map((product) =>
             <Grid key={product.id} item xs={12} sm={6}>
