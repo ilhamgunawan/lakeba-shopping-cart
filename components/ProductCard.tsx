@@ -24,7 +24,7 @@ export default function ProductCard({ product }: Props) {
 
   return (
     <Card elevation={4}>
-      <CardActionArea href={`/products/${product.id}`}>
+      <CardActionArea>
         <CardMedia
           component="img"
           height="140"
