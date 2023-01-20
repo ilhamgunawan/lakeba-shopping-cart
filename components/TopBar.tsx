@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function TopBar({ title }: Props) {
-  const { totalQuantity } = useCartStore()
+  const { totalQuantity, toggleCartModal } = useCartStore()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -21,7 +21,7 @@ export default function TopBar({ title }: Props) {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {title}
           </Typography>
-          <IconButton aria-label="cart" color="inherit">
+          <IconButton onClick={toggleCartModal} aria-label="cart" color="inherit">
             <Badge badgeContent={totalQuantity} color="success">
               <ShoppingCartIcon />
             </Badge>

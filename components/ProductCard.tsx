@@ -23,7 +23,7 @@ export default function ProductCard({ product }: Props) {
   const { addItem } = useCartStore()
 
   return (
-    <Card>
+    <Card elevation={4}>
       <CardActionArea href={`/products/${product.id}`}>
         <CardMedia
           component="img"
@@ -70,7 +70,7 @@ export default function ProductCard({ product }: Props) {
 
 export function Placeholder() {
   return (
-    <Card>
+    <Card elevation={4}>
       <CardActionArea>
         <Skeleton variant="rounded" width="100%" height={140} />
         <CardContent>

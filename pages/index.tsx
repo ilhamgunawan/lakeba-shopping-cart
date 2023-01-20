@@ -5,6 +5,7 @@ import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import ProductCard, { Placeholder } from '@/components/ProductCard'
+import CartModal from '@/components/CartModal'
 import { GetServerSideProps } from "next"
 import { useQuery } from "react-query"
 import { getProducts } from "@/lib/product"
@@ -52,6 +53,7 @@ export default function IndexPage({ page }: Props) {
           )}
         </Grid>
       </Container>
+      <CartModal />
       <Snackbar
         open={showAddItemSuccessMessage}
         autoHideDuration={3000}
