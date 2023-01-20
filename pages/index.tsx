@@ -5,11 +5,14 @@ import Grid from '@mui/material/Grid'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import Pagination from '@mui/material/Pagination'
 import ProductCard, { Placeholder } from '@/components/ProductCard'
 import CartModal from '@/components/CartModal'
 import { GetServerSideProps } from "next"
 import { useQuery } from "react-query"
+import { useRouter } from 'next/router'
 import { getProducts } from "@/lib/product"
+import { getPagination } from '@/lib/pagination'
 import { useCartStore } from '@/stores/cart'
 
 const Header = dynamic(() => import('@/components/Header'), { ssr: false })
@@ -35,6 +38,7 @@ export default function IndexPage({ page }: Props) {
   const queryKey = `products-${page}`
   const { isLoading, data } = useQuery(queryKey, () => getProducts({ page }))
   const { showAddItemSuccessMessage, hideSuccessMessage } = useCartStore()
+  const router = useRouter()
 
   if (!data && isLoading) {
     return (
@@ -49,6 +53,14 @@ export default function IndexPage({ page }: Props) {
     )
   }
 
+  const pagination = getPagination({
+    limit: 10,
+    countAll: data?.total ?? 0,
+  })
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) =>
+    router.push(`/?page=${value}`)
+
   return (
     <>
       <Head><title>Product List</title></Head>
@@ -60,6 +72,20 @@ export default function IndexPage({ page }: Props) {
               <ProductCard product={product}/>
             </Grid>
           )}
+          <Grid 
+            item xs={12} 
+            marginTop={2}
+            sx={{
+              display: "flex",
+              justifyContent: "center"
+            }}
+          >
+            <Pagination 
+              count={pagination.totalPage}
+              page={page}
+              onChange={handleChangePage}
+            />
+          </Grid>
         </Grid>
       </Container>
       <CartModal />
