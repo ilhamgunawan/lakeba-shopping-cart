@@ -1,5 +1,6 @@
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import TopBar from '@/components/TopBar'
 import ProductCard, { Placeholder } from '@/components/ProductCard'
 import { GetServerSideProps } from "next"
 import { useQuery } from "react-query"
@@ -23,24 +24,30 @@ export default function IndexPage({ page }: Props) {
 
   if (!data && isLoading) {
     return (
-      <Container maxWidth="sm">
-        <Grid container spacing={2}>
-          <ProductPlaceholders />
-        </Grid>
-      </Container>
+      <>
+        <TopBar title="Product List" />
+        <Container maxWidth="sm">
+          <Grid container spacing={2}>
+            <ProductPlaceholders />
+          </Grid>
+        </Container>
+      </>
     )
   }
 
   return (
-    <Container maxWidth="sm">
-      <Grid container spacing={2}>
-        {data?.products.map((product) =>
-          <Grid key={product.id} item xs={12} sm={6}>
-            <ProductCard product={product}/>
-          </Grid>
-        )}
-      </Grid>
-    </Container>
+    <>
+      <TopBar title="Product List" />
+      <Container maxWidth="sm">
+        <Grid container spacing={2}>
+          {data?.products.map((product) =>
+            <Grid key={product.id} item xs={12} sm={6}>
+              <ProductCard product={product}/>
+            </Grid>
+          )}
+        </Grid>
+      </Container>
+    </>
   )
 }
 
